@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    "name": " GNOME Online Accounts integration",
+    "version": "@VERSION@",
+    "homepage_url": "@PACKAGE_URL@",
+
+    "description": "Integrate with GNOME Online Accounts",
+
+    "background": {
+        "page": "background.html"
+    },
+
+    "content_scripts": [
+        {
+          "js": [ "content.gmail.js" ],
+          "matches": [ "*://mail.google.com/*" ],
+          "run_at": "document_end"
+        }
+    ],
+
+    "plugins": [
+        { "path": "libgoa_npapi_plugin.so" }
+    ]
+}
+
