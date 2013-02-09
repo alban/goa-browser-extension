@@ -35,6 +35,7 @@
 typedef struct {
     NPPluginFuncs *plugin_funcs;
     NPP instance;
+    GoaClient *goa;
 } GoaBrowserPlugin;
 
 static NPNetscapeFuncs *browser_funcs = NULL;
@@ -106,6 +107,7 @@ NPError
 NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode,
         int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
 {
+    GError *error = NULL;
     g_debug ("%s()", G_STRFUNC);
 
     if (G_UNLIKELY (instance == NULL))
@@ -114,6 +116,15 @@ NPP_New(NPMIMEType pluginType, NPP instance, uint16_t mode,
     GoaBrowserPlugin *plugin = g_new0 (GoaBrowserPlugin, 1);
     plugin->instance = instance;
     instance->pdata = plugin;
+
+    plugin->goa = goa_client_new_sync (NULL /* GCancellable */, &error);
+    if (plugin->goa == NULL)
+      {
+        g_warning ("Error getting a GoaClient: %s (%s, %d)",
+            error->message, g_quark_to_string (error->domain), error->code);
+        return NPERR_MODULE_LOAD_FAILED_ERROR;
+      }
+
     return NPERR_NO_ERROR;
 }
 
@@ -124,6 +135,7 @@ NPP_Destroy(NPP instance, NPSavedData **save)
         return NPERR_NO_ERROR;
 
     GoaBrowserPlugin *plugin = instance->pdata;
+    g_clear_object (&plugin->goa);
     g_free (plugin);
 
     return NPERR_NO_ERROR;
@@ -186,14 +198,16 @@ NPError
 NPP_GetValue(NPP instance, NPPVariable variable, void *value)
 {
     NPBool support;
+    GoaBrowserPlugin *plugin;
     g_debug ("%s()", G_STRFUNC);
 
     if (G_UNLIKELY (instance == NULL || instance->pdata == NULL))
         return NPERR_INVALID_INSTANCE_ERROR;
 
+    plugin = instance->pdata;
     switch (variable) {
     case NPPVpluginScriptableNPObject:
-        *(NPObject **)value = goabrowser_create_plugin_object (instance);
+        *(NPObject **)value = goabrowser_create_plugin_object (instance, plugin->goa);
         break;
     case NPPVpluginNeedsXEmbed:
         support = false;

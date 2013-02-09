@@ -20,12 +20,38 @@
 #ifndef GOABROWSER_H
 #define GOABROWSER_H
 
-#include <glib.h>
+#include <glib-object.h>
+#define GOA_API_IS_SUBJECT_TO_CHANGE
+#include <goa/goa.h>
 
 G_BEGIN_DECLS
 
-void goabrowser_login_detected (const gchar *domain,
-                                const gchar *userid);
+#define GOABROWSER_TYPE_OBJECT            (goabrowser_object_get_type ())
+#define GOABROWSER_OBJECT(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GOABROWSER_TYPE_OBJECT, GoaBrowserObject))
+#define GOABROWSER_IS_OBJECT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GOABROWSER_TYPE_OBJECT))
+#define GOABROWSER_OBJECT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GOABROWSER_TYPE_OBJECT, GoaBrowserObjectClass))
+#define GOABROWSER_IS_OBJECT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GOABROWSER_TYPE_OBJECT))
+#define GOABROWSER_OBJECT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GOABROWSER_TYPE_OBJECT, GoaBrowserObjectClass))
+
+typedef struct _GoaBrowserObjectClass     GoaBrowserObjectClass;
+typedef struct _GoaBrowserObject          GoaBrowserObject;
+typedef struct _GoaBrowserObjectPrivate   GoaBrowserObjectPrivate;
+
+struct _GoaBrowserObjectClass
+{
+    GObjectClass parent_instance;
+};
+
+struct _GoaBrowserObject {
+    GObject                  parent_instance;
+    GoaBrowserObjectPrivate *priv;
+};
+
+GType             goabrowser_object_get_type        (void) G_GNUC_CONST;
+GoaBrowserObject *goabrowser_object_new             (GoaClient *client);
+void              goabrowser_object_login_detected  (GoaBrowserObject *self,
+                                                     const gchar      *domain,
+                                                     const gchar      *userid);
 
 G_END_DECLS
 

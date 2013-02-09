@@ -30,6 +30,7 @@
 typedef struct {
     NPObject object;
     NPP instance;
+    GoaBrowserObject *goa;
 } GoaBrowserObjectWrapper;
 
 static gboolean goabrowser_login_detected_wrapper (NPObject *object,
@@ -180,13 +181,14 @@ static NPClass js_object_class = {
 };
 
 NPObject *
-goabrowser_create_plugin_object (NPP instance)
+goabrowser_create_plugin_object (NPP instance, GoaClient *client)
 {
     NPObject *object = NPN_CreateObject (instance, &js_object_class);
     GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)object;
     g_return_val_if_fail (wrapper != NULL, NULL);
     g_debug ("%s()", G_STRFUNC);
     wrapper->instance = instance;
+    wrapper->goa = goabrowser_object_new (client);
     return object;
 }
 
@@ -198,6 +200,7 @@ goabrowser_login_detected_wrapper (NPObject *object,
 {
     gboolean success = TRUE;
     gchar *domain = NULL, *userid = NULL;
+    GoaBrowserObject *goa = ((GoaBrowserObjectWrapper*)object)->goa;
 
     g_debug ("%s()", G_STRFUNC);
 
@@ -213,7 +216,7 @@ goabrowser_login_detected_wrapper (NPObject *object,
         goto out;
     }
 
-    goabrowser_login_detected (domain, userid);
+    goabrowser_object_login_detected (goa, domain, userid);
 
 out:
     g_free (domain);

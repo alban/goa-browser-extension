@@ -22,12 +22,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define GOA_API_IS_SUBJECT_TO_CHANGE
+#include <goa/goa.h>
+
 #ifndef GOABROWSER_NPAPI_OBJECT_H
 #define GOABROWSER_NPAPI_OBJECT_H
 
 #include "npapi-headers/headers/npapi.h"
 #include "npapi-headers/headers/npruntime.h"
 
-NPObject *goabrowser_create_plugin_object (NPP instance);
+NPObject *goabrowser_create_plugin_object (NPP instance, GoaClient *goa);
 
 #endif /* GOABROWSER_NPAPI_OBJECT_H */
