@@ -8,8 +8,12 @@ function detectLoginInfo() {
     return false;
   var msg = {
     type: 'login-detected',
-    login: loginName,
-    domain: 'mail.google.com'
+    data: {
+      identity: loginName,
+      provider: 'google',
+      services: ['mail'],
+      authenticationDomain: 'google.com'
+    }
   };
   console.log("goa: Detected login info:", msg);
   chrome.extension.sendMessage(msg);

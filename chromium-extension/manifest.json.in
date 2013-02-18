@@ -10,6 +10,11 @@
         "page": "background.html"
     },
 
+    "permissions": [
+        "cookies",
+        "<all_urls>"
+    ],
+
     "content_scripts": [
         {
           "js": [ "content.gmail.js" ],

@@ -107,8 +107,9 @@ goabrowser_object_new (GoaClient *client)
 
 void
 goabrowser_object_login_detected (GoaBrowserObject *self,
-                                  const gchar      *domain,
-                                  const gchar      *userid)
+                                  gchar            *collected_data_json)
 {
-  g_debug ("%s() domain:%s userid:%s", G_STRFUNC, domain, userid);
+  GError *error;
+  g_debug ("%s()", G_STRFUNC);
+  g_debug ("%s() collected data:\n%s", G_STRFUNC, collected_data_json);
 }

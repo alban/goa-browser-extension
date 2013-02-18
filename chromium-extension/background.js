@@ -6,5 +6,15 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (typeof(request) != 'object' || request['type'] != 'login-detected')
         return;
 
-    plugin.loginDetected(request.domain, request.login, null);
+    var collectedData = request.data;
+
+    chrome.cookies.getAll({domain:collectedData.authenticationDomain}, function(cookies) {
+        collectedData.cookies = cookies.map(function(cookie) {
+            var c = cookie;
+            delete c.storeId;
+            console.log("goa: cookie", c);
+            return c;
+        });
+        plugin.loginDetected(JSON.stringify(collectedData));
+    });
 });

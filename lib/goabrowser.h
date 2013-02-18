@@ -50,8 +50,7 @@ struct _GoaBrowserObject {
 GType             goabrowser_object_get_type        (void) G_GNUC_CONST;
 GoaBrowserObject *goabrowser_object_new             (GoaClient *client);
 void              goabrowser_object_login_detected  (GoaBrowserObject *self,
-                                                     const gchar      *domain,
-                                                     const gchar      *userid);
+                                                     gchar            *collected_data_json);
 
 G_END_DECLS
 

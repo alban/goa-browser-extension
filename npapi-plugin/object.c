@@ -26,6 +26,7 @@
 #include "object.h"
 
 #include <glib.h>
+#include <json.h>
 
 typedef struct {
     NPObject object;
@@ -193,34 +194,48 @@ goabrowser_create_plugin_object (NPP instance, GoaClient *client)
 }
 
 static gboolean
+is_valid_json (const gchar* data)
+{
+    enum json_tokener_error error = json_tokener_success;
+    json_object *json = json_tokener_parse_verbose (data, &error);
+    if (G_UNLIKELY (error != json_tokener_success))
+      {
+        g_debug ("%s() failed to parse argument #1 (collectedData) as JSON: %s", G_STRFUNC,
+                 json_tokener_error_desc(error));
+        return FALSE;
+    }
+    json_object_put (json);
+    return TRUE;
+}
+
+static gboolean
 goabrowser_login_detected_wrapper (NPObject *object,
                                    const NPVariant *args,
                                    uint32_t argc,
                                    NPVariant *result)
 {
+    GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)object;
+    gchar *collected_data = NULL;
     gboolean success = TRUE;
-    gchar *domain = NULL, *userid = NULL;
-    GoaBrowserObject *goa = ((GoaBrowserObjectWrapper*)object)->goa;
 
     g_debug ("%s()", G_STRFUNC);
 
-    if (G_UNLIKELY (argc < 1 || !variant_to_string (&args[0], &domain) || domain == NULL)) {
-        g_debug ("%s() string expected for argument #1 (domain)", G_STRFUNC);
+    if (G_UNLIKELY (argc < 1 || !variant_to_string (&args[0], &collected_data) || collected_data == NULL))
+      {
+        g_debug ("%s() JSON-encoded string expected for argument #1 (collectedData)", G_STRFUNC);
         success = FALSE;
         goto out;
     }
 
-    if (G_UNLIKELY (argc < 2 || !variant_to_string (&args[1], &userid) || userid == NULL)) {
-        g_debug ("%s() string expected for argument #2 (userid)", G_STRFUNC);
+    if (G_UNLIKELY (!is_valid_json (collected_data)))
+      {
         success = FALSE;
         goto out;
-    }
+      }
 
-    goabrowser_object_login_detected (goa, domain, userid);
-
+    goabrowser_object_login_detected (wrapper->goa, collected_data);
 out:
-    g_free (domain);
-    g_free (userid);
+    g_free (collected_data);
     return success;
 }
 
