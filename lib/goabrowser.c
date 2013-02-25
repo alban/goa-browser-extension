@@ -19,6 +19,8 @@
 
 #include "goabrowser.h"
 
+#include "json-gvariant.h"
+
 enum
 {
     PROP_0,
@@ -109,7 +111,32 @@ void
 goabrowser_object_login_detected (GoaBrowserObject *self,
                                   gchar            *collected_data_json)
 {
-  GError *error;
+  GError *error = NULL;
+  GVariant *params, *extra = NULL, *v;
+  GVariantBuilder *builder = NULL;
   g_debug ("%s()", G_STRFUNC);
   g_debug ("%s() collected data:\n%s", G_STRFUNC, collected_data_json);
+
+  extra = json_gvariant_deserialize_data (collected_data_json, -1, NULL, &error);
+  if (extra == NULL)
+    {
+      g_warning ("Unable to parse the request for the creation of a new GNOME Online Account: %s",
+          error->message);
+      g_error_free (error);
+      goto out;
+    }
+
+  g_debug ("%s() requesting new account creation", G_STRFUNC);
+
+  builder = g_variant_builder_new (G_VARIANT_TYPE ("av"));
+  v = g_variant_lookup_value (extra, "provider", G_VARIANT_TYPE_STRING);
+  g_variant_builder_add (builder, "v", v);
+  v = g_variant_lookup_value (extra, "identity",G_VARIANT_TYPE_STRING);
+  g_variant_builder_add (builder, "v", v);
+  g_variant_builder_add (builder, "v", extra);
+  params = g_variant_builder_end (builder);
+
+  g_debug ("variant:\n%s\n", g_variant_print (params, TRUE));
+out:
+  g_clear_pointer (&params, g_variant_unref);
 }

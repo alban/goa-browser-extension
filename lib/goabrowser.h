@@ -52,6 +52,26 @@ GoaBrowserObject *goabrowser_object_new             (GoaClient *client);
 void              goabrowser_object_login_detected  (GoaBrowserObject *self,
                                                      gchar            *collected_data_json);
 
+#ifndef g_clear_pointer /* Remove this when we can depend on GLib >= 2.34 */
+#define g_clear_pointer(pp, destroy) \
+  G_STMT_START {                                                               \
+    G_STATIC_ASSERT (sizeof *(pp) == sizeof (gpointer));                       \
+    /* Only one access, please */                                              \
+    gpointer *_pp = (gpointer *) (pp);                                         \
+    gpointer _p;                                                               \
+    /* This assignment is needed to avoid a gcc warning */                     \
+    GDestroyNotify _destroy = (GDestroyNotify) (destroy);                      \
+                                                                               \
+    (void) (0 ? (gpointer) *(pp) : 0);                                         \
+    do                                                                         \
+      _p = g_atomic_pointer_get (_pp);                                         \
+    while G_UNLIKELY (!g_atomic_pointer_compare_and_exchange (_pp, _p, NULL)); \
+                                                                               \
+    if (_p)                                                                    \
+      _destroy (_p);                                                           \
+  } G_STMT_END
+#endif
+
 G_END_DECLS
 
 #endif /* GOABROWSER_H */

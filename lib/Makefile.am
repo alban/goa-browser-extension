@@ -5,6 +5,8 @@ libgoabrowser_la_CPPFLAGS = \
 	-DG_LOG_DOMAIN=\"goabrowser\"
 
 libgoabrowser_la_SOURCES = \
+	json-gvariant.c \
+	json-gvariant.h \
 	goabrowser.c \
 	goabrowser.h
 
