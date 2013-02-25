@@ -37,12 +37,12 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 PKG_CHECK_MODULES(GOABROWSER,
     glib-2.0
     goa-1.0
-    json
+    json >= 0.10
     )
 PKG_CHECK_MODULES(GOABROWSER_NPAPI_PLUGIN,
     glib-2.0
     goa-1.0
-    json
+    json >= 0.10
     )
 GLIB_GSETTINGS
 

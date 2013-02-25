@@ -111,14 +111,17 @@ void
 goabrowser_object_login_detected (GoaBrowserObject *self,
                                   gchar            *collected_data_json)
 {
+  static const gchar *app_id = "org.gnome.ControlCenter";
+  static const gchar *action_id = "launch-panel";
   GError *error = NULL;
-  GVariant *params, *extra = NULL, *v;
+  GVariant *params, *preseed = NULL, *v;
   GVariantBuilder *builder = NULL;
+  GApplication *gnomecc = NULL;
   g_debug ("%s()", G_STRFUNC);
   g_debug ("%s() collected data:\n%s", G_STRFUNC, collected_data_json);
 
-  extra = json_gvariant_deserialize_data (collected_data_json, -1, NULL, &error);
-  if (extra == NULL)
+  preseed = json_gvariant_deserialize_data (collected_data_json, -1, NULL, &error);
+  if (preseed == NULL)
     {
       g_warning ("Unable to parse the request for the creation of a new GNOME Online Account: %s",
           error->message);
@@ -129,14 +132,22 @@ goabrowser_object_login_detected (GoaBrowserObject *self,
   g_debug ("%s() requesting new account creation", G_STRFUNC);
 
   builder = g_variant_builder_new (G_VARIANT_TYPE ("av"));
-  v = g_variant_lookup_value (extra, "provider", G_VARIANT_TYPE_STRING);
+  g_variant_builder_add (builder, "v", g_variant_new_string ("new"));
+  v = g_variant_lookup_value (preseed, "provider", G_VARIANT_TYPE_STRING);
   g_variant_builder_add (builder, "v", v);
-  v = g_variant_lookup_value (extra, "identity",G_VARIANT_TYPE_STRING);
-  g_variant_builder_add (builder, "v", v);
-  g_variant_builder_add (builder, "v", extra);
-  params = g_variant_builder_end (builder);
+  g_variant_builder_add (builder, "v", preseed);
+  params = g_variant_new ("(s@av)", "online-accounts", g_variant_builder_end (builder));
 
-  g_debug ("variant:\n%s\n", g_variant_print (params, TRUE));
+  gnomecc = g_application_new (app_id, G_APPLICATION_IS_LAUNCHER);
+  if (!g_application_register (gnomecc, NULL, &error))
+    {
+      g_warning ("Failed to register launcher for %s: %s (%s, %d)", app_id,
+          error->message, g_quark_to_string (error->domain), error->code);
+      g_error_free (error);
+      goto out;
+    }
+  g_debug ("%s() activating action '%s'", G_STRFUNC, action_id);
+  g_action_group_activate_action (G_ACTION_GROUP (gnomecc), action_id, params);
 out:
-  g_clear_pointer (&params, g_variant_unref);
+  g_clear_object (&gnomecc);
 }
