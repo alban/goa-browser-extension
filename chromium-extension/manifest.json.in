@@ -10,6 +10,15 @@
         "page": "background.html"
     },
 
+    "icons": {
+        "16": "16x16/goa-panel.png",
+        "22": "22x22/goa-panel.png",
+        "24": "24x24/goa-panel.png",
+        "32": "32x32/goa-panel.png",
+        "48": "48x48/goa-panel.png",
+        "256": "256x256/goa-panel.png"
+    },
+
     "permissions": [
         "cookies",
         "<all_urls>"

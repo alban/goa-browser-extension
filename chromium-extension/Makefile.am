@@ -14,11 +14,14 @@ SCRIPT_FILES = \
 	$(wildcard *.html) \
 	$(wildcard *.js)
 
+ICON_DIRS = \
+	$(wildcard $(top_builddir)/icons/*)
+
 noinst_DATA = $(SCRIPT_FILES)
 
 NPAPI_PLUGIN=$(top_builddir)/npapi-plugin/.libs/libgoa_npapi_plugin.so
 
-$(TMPDIR): $(SCRIPT_FILES) manifest.json gnome-online-accounts.json $(NPAPI_PLUGIN)
+$(TMPDIR): $(SCRIPT_FILES) manifest.json gnome-online-accounts.json $(NPAPI_PLUGIN) $(ICON_DIRS)
 	-rm -R $@
 	mkdir $@
 	cp -r $^ $@
