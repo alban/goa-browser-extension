@@ -1,0 +1,31 @@
+<html>
+<head>
+  <title>GNOME Online Accounts Extension Infobar Page</title>
+  <style>
+    html {
+      height: 100%; }
+    body {
+      height: 100%; width: 100%;
+      font-size: 16px; line-height: 36px; font-family: sans-serif;
+      display: -webkit-box; -webkit-box-orient: horizontal; }
+    button {
+      font-size: inherit; line-height: inherit; line-height: 26px; }
+    #goa-infobar-prompt {
+      -webkit-box-flex: 1; }
+    #goa-infobar-learn-more a {
+      color: #15c; }
+  </style>
+ </head>
+<body>
+    <div id="goa-infobar-prompt" class="goa-infobar-box">
+    Use this Online Account to automatically sign on from other applications?
+    <button id="goa-infobar-button-ignore">No thanks</button>
+    <button id="goa-infobar-button-create">OK, go on</button>
+  </div>
+
+  <div id="goa-infobar-learn-more" class="goa-infobar-box">
+    <a href="https://live.gnome.org/GnomeOnlineAccounts" target="_blank">Learn more</a>
+  </div>
+  <script src="infobar.js"></script>
+</body>
+</html>
