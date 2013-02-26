@@ -19,10 +19,9 @@ Makefile.in
 /build-aux
 /aclocal.m4
 /chromium-extension/*.json
-/chromium-extension/*.so
-/chromium-extension/chromium-extension.crx
-/chromium-extension/eid
 /chromium-extension/res/
+/chromium-extension/extension/
+/chromium-extension/extension.crx
 /compile
 /config.*
 /configure

@@ -1,5 +1,8 @@
-CLEANFILES = res/*
+CLEANFILES = $(TMPDIR)/* res/*
 EXTRA_DIST =
+
+TMPDIR = extension
+RSAFILE = $(abs_top_builddir)/gnome-online-accounts.pem
 
 extensiondir = $(libdir)/gnome-online-accounts-chromium
 extension_DATA=res/gnome-online-accounts.crx
@@ -15,23 +18,27 @@ noinst_DATA = $(SCRIPT_FILES)
 
 NPAPI_PLUGIN=$(top_builddir)/npapi-plugin/.libs/libgoa_npapi_plugin.so
 
-res/gnome-online-accounts.crx: $(SCRIPT_FILES) manifest.json gnome-online-accounts.json $(NPAPI_PLUGIN)
-	cp -f $(NPAPI_PLUGIN) .
-	if [ ! -f ../gnome-online-accounts.pem ]; \
-	then \
-		openssl genrsa 1024 > ../gnome-online-accounts.pem; \
-	fi
-	$(srcdir)/crxmake.sh $(abs_builddir) ../gnome-online-accounts.pem
-	mv res/chromium-extension.crx res/gnome-online-accounts.crx
+$(TMPDIR): $(SCRIPT_FILES) manifest.json gnome-online-accounts.json $(NPAPI_PLUGIN)
+	-rm -R $@
+	mkdir $@
+	cp -r $^ $@
+
+$(RSAFILE):
+	openssl genrsa 1024 > $@
+
+res/gnome-online-accounts.crx: $(TMPDIR) $(RSAFILE)
+	echo $(abs_builddir)
+	$(srcdir)/crxmake.sh $(TMPDIR) $(RSAFILE)
+	mv res/extension.crx res/gnome-online-accounts.crx
 
 if WITH_CHROMIUM
 chromiummanifestdir = $(datadir)/chromium/extensions/
-chromiummanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/res/*.json)
+chromiummanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/extension/*.json)
 endif
 
 if WITH_GOOGLE_CHROME
 googlechromemanifestdir = $(datadir)/google-chrome/extensions/
-googlechromemanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/res/*.json)
+googlechromemanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/extension/*.json)
 endif
 
 %.json: %.json.in
@@ -43,7 +50,7 @@ CLEANFILES += \
 	manifest.json \
 	gnome-online-accounts.json \
 	libgoa_npapi_plugin.so \
-	chromium-extension.crx
+	extension.crx
 
 EXTRA_DIST += \
 	manifest.json.in \
