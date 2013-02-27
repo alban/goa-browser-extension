@@ -30,7 +30,7 @@
 
     "permissions": [
         "cookies",
-        "experimental",
+        // "experimental", // for the infobar
         "<all_urls>"
     ],
 

@@ -56,10 +56,13 @@ function loginDetected(request, sender) {
     };
     accountDataStore(accountId, data);
 
-    chrome.experimental.infobars.show({
-        tabId: sender.tab.id,
-        path: "infobar.html#"+accountId
-    });
+    // Show the infobar only if experimental APIs are enabled
+    if (chrome.experimental && chrome.experimental.infobars) {
+        chrome.experimental.infobars.show({
+            tabId: sender.tab.id,
+            path: "infobar.html#"+accountId
+        });
+    }
     chrome.pageAction.setPopup({
         tabId: sender.tab.id,
         popup: "popup.html#"+accountId
