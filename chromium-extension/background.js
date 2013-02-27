@@ -50,7 +50,12 @@ function loginDetected(request, sender) {
     // Do nothing if already dismissed or configured
     if (accountIsIgnored(accountId) || accountDataContains(accountId))
         return;
-    accountDataStore(accountId, request.data);
+    var data = {
+        collected: request.data,
+        tabId: sender.tab.id
+    };
+    accountDataStore(accountId, data);
+
     chrome.experimental.infobars.show({
         tabId: sender.tab.id,
         path: "infobar.html#"+accountId
@@ -67,15 +72,15 @@ function accountCreate(request, sender) {
     // Do nothing if non-existent or already created
     if (!data)
         return;
-
-    chrome.cookies.getAll({domain:data.authenticationDomain}, function(cookies) {
-        data.cookies = cookies.map(function(cookie) {
+    var collected = data.collected;
+    chrome.cookies.getAll({domain:collected.authenticationDomain}, function(cookies) {
+        collected.cookies = cookies.map(function(cookie) {
             var c = cookie;
             delete c.storeId;
             console.log("goa: cookie", c);
             return c;
         });
-        plugin.loginDetected(JSON.stringify(data));
+        plugin.loginDetected(JSON.stringify(collected));
     });
 };
 
@@ -83,6 +88,10 @@ function accountIgnore(request, sender) {
     var accountId = request.accountId;
     console.log("goa: ignore account '"+accountId+"'");
     if (!accountId)
+        return;
+    var data = accountDataTake(accountId);
+    // Do nothing if non-existent or already created
+    if (!data)
         return;
     if (accountIsIgnored(accountId))
       return;
