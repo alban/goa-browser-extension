@@ -33,12 +33,22 @@ function accountDataSterilize(accountId) {
     accountData[accountId] = false;
 }
 
+function accountIsIgnored(accountId)
+{
+    return localStorage.getItem("ignore-"+accountId);
+}
+
+function accountSetIgnored(accountId)
+{
+    localStorage.setItem("ignore-"+accountId, new Date());
+}
+
 function loginDetected(request, sender) {
     var accountId = generateAccountId(request.data);
     if (!accountId)
         return;
-    // Do nothing if already detected
-    if (accountDataContains(accountId))
+    // Do nothing if already dismissed or configured
+    if (accountIsIgnored(accountId) || accountDataContains(accountId))
         return;
     accountDataStore(accountId, request.data);
     chrome.experimental.infobars.show({
@@ -74,9 +84,9 @@ function accountIgnore(request, sender) {
     console.log("goa: ignore account '"+accountId+"'");
     if (!accountId)
         return;
-    if (localStorage.getItem(accountId))
+    if (accountIsIgnored(accountId))
       return;
-    localStorage.setItem(accountId, new Date());
+    accountSetIgnored(accountId);
 };
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
