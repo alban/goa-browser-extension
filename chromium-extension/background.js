@@ -33,12 +33,12 @@ function accountDataSterilize(accountId) {
     accountData[accountId] = false;
 }
 
-function accountIsIgnored(accountId)
+function accountIsPermanentlyIgnored(accountId)
 {
     return localStorage.getItem("ignore-"+accountId);
 }
 
-function accountSetIgnored(accountId)
+function accountSetPermanentlyIgnored(accountId)
 {
     localStorage.setItem("ignore-"+accountId, new Date());
 }
@@ -48,7 +48,7 @@ function loginDetected(request, sender) {
     if (!accountId)
         return;
     // Do nothing if already dismissed or configured
-    if (accountIsIgnored(accountId) || accountDataContains(accountId))
+    if (accountIsPermanentlyIgnored(accountId) || accountDataContains(accountId))
         return;
     var data = {
         collected: request.data,
@@ -103,9 +103,9 @@ function accountIgnore(request, sender) {
     if (!data)
         return;
     chrome.pageAction.hide(data.tabId);
-    if (accountIsIgnored(accountId))
+    if (accountIsPermanentlyIgnored(accountId))
       return;
-    accountSetIgnored(accountId);
+    accountSetPermanentlyIgnored(accountId);
 };
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
