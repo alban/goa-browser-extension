@@ -10,6 +10,15 @@
         "page": "background.html"
     },
 
+    "page_action": {
+        "default_icon": {
+            "19": "16x16/goa-panel.png",
+            "38": "32x32/goa-panel.png"
+        },
+        "default_title": "Online Account",
+        "default_popup": "popup.html"
+    },
+
     "icons": {
         "16": "16x16/goa-panel.png",
         "22": "22x22/goa-panel.png",

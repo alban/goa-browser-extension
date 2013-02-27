@@ -1,0 +1,48 @@
+  </div>
+<html>
+<head>
+  <title>GNOME Online Accounts Extension Popup Page</title>
+  <style>
+    * {
+      box-sizing: border-box; }
+    html {
+      min-width: 270px; }
+    body {
+      font-family: sans-serif; line-height: 1.5em; margin: 12px;
+      display: -webkit-box; -webkit-box-orient: horizontal; }
+    button {
+      font-size: inherit; line-height: inherit; line-height: 26px; }
+    #goa-popup-prompt {
+      -webkit-box-flex: 1; display: -webkit-box; -webkit-box-orient: vertical; }
+    #goa-popup-icon {
+      margin-right: 0.75em; }
+    #goa-popup-buttons {
+      text-align: right; margin-top: 0.5em; }
+    #goa-popup-learn-more {
+      text-align: right; margin-top: 0.5em; }
+    #goa-popup-learn-more a {
+      color: #15c; }
+  </style>
+ </head>
+<body>
+  <div id="goa-popup-icon">
+    <img src="48x48/goa-panel.png"/>
+  </div>
+
+  <div id="goa-popup-prompt">
+    <div>
+    Use this Online Account to automatically sign on from other applications?
+    </div>
+
+    <div id="goa-popup-buttons">
+      <button id="goa-popup-button-ignore">No thanks</button>
+      <button id="goa-popup-button-create" autofocus="autofocus" tabindex="1">OK, go on</button>
+    </div>
+
+    <div id="goa-popup-learn-more">
+      <a href="https://live.gnome.org/GnomeOnlineAccounts" target="_blank">Learn more</a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

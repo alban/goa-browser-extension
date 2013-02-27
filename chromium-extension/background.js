@@ -60,6 +60,11 @@ function loginDetected(request, sender) {
         tabId: sender.tab.id,
         path: "infobar.html#"+accountId
     });
+    chrome.pageAction.setPopup({
+        tabId: sender.tab.id,
+        popup: "popup.html#"+accountId
+    });
+    chrome.pageAction.show(sender.tab.id);
 }
 
 function accountCreate(request, sender) {
@@ -72,6 +77,7 @@ function accountCreate(request, sender) {
     // Do nothing if non-existent or already created
     if (!data)
         return;
+    chrome.pageAction.hide(data.tabId);
     var collected = data.collected;
     chrome.cookies.getAll({domain:collected.authenticationDomain}, function(cookies) {
         collected.cookies = cookies.map(function(cookie) {
@@ -93,6 +99,7 @@ function accountIgnore(request, sender) {
     // Do nothing if non-existent or already created
     if (!data)
         return;
+    chrome.pageAction.hide(data.tabId);
     if (accountIsIgnored(accountId))
       return;
     accountSetIgnored(accountId);
