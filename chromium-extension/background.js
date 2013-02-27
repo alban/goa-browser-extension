@@ -33,7 +33,7 @@ function accountDataSterilize(accountId) {
     accountData[accountId] = false;
 }
 
-function loginDetected(request, sender, sendResponse) {
+function loginDetected(request, sender) {
     var accountId = generateAccountId(request.data);
     if (!accountId)
         return;
@@ -47,7 +47,7 @@ function loginDetected(request, sender, sendResponse) {
     });
 }
 
-function accountCreate(request, sender, sendResponse) {
+function accountCreate(request, sender) {
     var accountId = request.accountId;
     console.log("goa: create account", accountId);
     if (!accountId)
@@ -69,7 +69,7 @@ function accountCreate(request, sender, sendResponse) {
     });
 };
 
-function accountIgnore(request, sender, sendResponse) {
+function accountIgnore(request, sender) {
     var accountId = request.accountId;
     console.log("goa: ignore account '"+accountId+"'");
     if (!accountId)
@@ -81,12 +81,14 @@ function accountIgnore(request, sender, sendResponse) {
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     console.log("goa: Message received", request, "from", sender);
-    if (typeof(request) != 'object')
-        return;
-    if (request['type'] == 'login-detected')
-        return loginDetected(request, sender, sendResponse);
-    if (request['type'] == 'account-create')
-        return accountCreate(request, sender, sendResponse);
-    if (request['type'] == 'account-ignore')
-        return accountIgnore(request, sender, sendResponse);
+    var ret = {};
+    if (typeof(request) == 'object') {
+      if (request['type'] == 'login-detected')
+        ret = loginDetected(request, sender);
+      else if (request['type'] == 'account-create')
+        ret = accountCreate(request, sender);
+      else if (request['type'] == 'account-ignore')
+        ret = accountIgnore(request, sender);
+    }
+    sendResponse(ret);
 });
