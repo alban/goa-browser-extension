@@ -27,10 +27,20 @@ function accountDataTake(accountId) {
     return data;
 }
 
+function accountDataPeek(accountId) {
+    if (!accountDataContains(accountId))
+        return;
+    return accountData[accountId];
+}
+
 // Get rid of collected data without removing the account id,
 // so we can keep track of the accounts already handled
 function accountDataSterilize(accountId) {
     accountData[accountId] = false;
+}
+
+function accountDataIsSterilized(accountId) {
+    return accountData[accountId] === false;
 }
 
 function accountIsPermanentlyIgnored(accountId)
@@ -48,8 +58,13 @@ function loginDetected(request, sender) {
     if (!accountId)
         return;
     // Do nothing if already dismissed or configured
-    if (accountIsPermanentlyIgnored(accountId) || accountDataContains(accountId))
+    if (accountIsPermanentlyIgnored(accountId) || accountDataIsSterilized(accountId))
         return;
+    // Cleanup the page action icon on the old tab, if any
+    var oldData = accountDataPeek(accountId);
+    if (oldData && oldData.tabId != sender.tab.id)
+        chrome.pageAction.hide(oldData.tabId);
+    // Store/Refresh the collected data
     var data = {
         collected: request.data,
         tabId: sender.tab.id
@@ -58,10 +73,13 @@ function loginDetected(request, sender) {
 
     // Show the infobar only if experimental APIs are enabled
     if (chrome.experimental && chrome.experimental.infobars) {
-        chrome.experimental.infobars.show({
-            tabId: sender.tab.id,
-            path: "infobar.html#"+accountId
-        });
+        // Show the infobar the first time only
+        if (!oldData) {
+            chrome.experimental.infobars.show({
+                tabId: sender.tab.id,
+                path: "infobar.html#"+accountId
+            });
+        }
     }
     chrome.pageAction.setPopup({
         tabId: sender.tab.id,
