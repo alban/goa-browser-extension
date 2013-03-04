@@ -4,7 +4,7 @@ EXTRA_DIST =
 TMPDIR = extension
 RSAFILE = $(abs_top_builddir)/gnome-online-accounts.pem
 
-extensiondir = $(libdir)/gnome-online-accounts-chromium
+extensiondir = $(libdir)/gnome-online-accounts-chromium-common
 extension_DATA=res/gnome-online-accounts.crx
 
 clean-extension-package:
