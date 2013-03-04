@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libgoabrowser.la
+noinst_LTLIBRARIES = libgoabrowser.la
 
 libgoabrowser_la_CPPFLAGS = \
 	$(GOABROWSER_CFLAGS) \
