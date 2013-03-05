@@ -53,7 +53,20 @@ function accountSetPermanentlyIgnored(accountId)
     localStorage.setItem("ignore-"+accountId, new Date());
 }
 
+function accountAlreadyConfigured (requestData)
+{
+    var accounts = plugin.listAccounts();
+    for (var i=0; i<accounts.length; i++) {
+        var account = accounts[i];
+        if (account.providerType == requestData.provider && account.identity == requestData.identity)
+          return true;
+    }
+    return false;
+}
+
 function loginDetected(request, sender) {
+    if (accountAlreadyConfigured (request.data))
+        return;
     var accountId = generateAccountId(request.data);
     if (!accountId)
         return;
