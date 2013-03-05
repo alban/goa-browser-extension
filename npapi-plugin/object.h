@@ -31,6 +31,6 @@
 #include "npapi-headers/headers/npapi.h"
 #include "npapi-headers/headers/npruntime.h"
 
-NPObject *goabrowser_create_plugin_object (NPP instance, GoaClient *goa);
+NPObject *goabrowser_create_plugin_object (NPP instance, NPObject* window, GoaClient *goa);
 
 #endif /* GOABROWSER_NPAPI_OBJECT_H */

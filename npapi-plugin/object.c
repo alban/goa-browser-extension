@@ -25,12 +25,14 @@
 #include "goabrowser.h"
 #include "object.h"
 
+#include <string.h>
 #include <glib.h>
 #include <json.h>
 
 typedef struct {
     NPObject object;
     NPP instance;
+    NPObject *window;
     GoaBrowserObject *goa;
 } GoaBrowserObjectWrapper;
 
@@ -89,6 +91,7 @@ static void
 NPClass_Deallocate (NPObject *npobj)
 {
     GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)npobj;
+    NPN_ReleaseObject (wrapper->window);
     g_clear_object (&wrapper->goa);
     g_free (wrapper);
 }
@@ -190,13 +193,14 @@ static NPClass js_object_class = {
 };
 
 NPObject *
-goabrowser_create_plugin_object (NPP instance, GoaClient *client)
+goabrowser_create_plugin_object (NPP instance, NPObject *window, GoaClient *client)
 {
     NPObject *object = NPN_CreateObject (instance, &js_object_class);
     GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)object;
     g_return_val_if_fail (wrapper != NULL, NULL);
     g_debug ("%s()", G_STRFUNC);
     wrapper->instance = instance;
+    wrapper->window = NPN_RetainObject (window);
     wrapper->goa = goabrowser_object_new (client);
     return object;
 }

@@ -26,6 +26,7 @@
 #include "plugin.h"
 #include "object.h"
 
+#include <string.h>
 #include <glib.h>
 
 #define PLUGIN_NAME        "GNOME Online Accounts integration plugin"
@@ -198,6 +199,8 @@ NPError
 NPP_GetValue(NPP instance, NPPVariable variable, void *value)
 {
     NPBool support;
+    NPError err;
+    NPObject *window = NULL;
     GoaBrowserPlugin *plugin;
     g_debug ("%s()", G_STRFUNC);
 
@@ -207,7 +210,10 @@ NPP_GetValue(NPP instance, NPPVariable variable, void *value)
     plugin = instance->pdata;
     switch (variable) {
     case NPPVpluginScriptableNPObject:
-        *(NPObject **)value = goabrowser_create_plugin_object (instance, plugin->goa);
+        err = NPN_GetValue (instance, NPNVWindowNPObject, &window);
+        g_warn_if_fail (err == NPERR_NO_ERROR);
+        *(NPObject **)value = goabrowser_create_plugin_object (instance, window, plugin->goa);
+        NPN_ReleaseObject (window);
         break;
     case NPPVpluginNeedsXEmbed:
         support = false;
