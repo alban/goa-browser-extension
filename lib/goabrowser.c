@@ -32,9 +32,36 @@ static GParamSpec *obj_props[PROP_LAST];
 
 struct _GoaBrowserObjectPrivate {
     GoaClient *goa;
+    GList *accounts;
 };
 
 G_DEFINE_TYPE (GoaBrowserObject, goabrowser_object, G_TYPE_OBJECT)
+
+static void
+on_account_added (GoaClient *client,
+                  GoaObject *object,
+                  gpointer   user_data)
+{
+  GoaBrowserObject *self = GOABROWSER_OBJECT (user_data);
+  GoaBrowserObjectPrivate *priv = self->priv;
+
+  g_debug ("%s()", G_STRFUNC);
+  priv->accounts = g_list_prepend (priv->accounts, g_object_ref (object));
+}
+
+static void
+on_account_removed (GoaClient *client,
+                    GoaObject *object,
+                    gpointer   user_data)
+{
+  GoaBrowserObject *self = GOABROWSER_OBJECT (user_data);
+  GoaBrowserObjectPrivate *priv = self->priv;
+
+  g_debug ("%s()", G_STRFUNC);
+  priv->accounts = g_list_remove (priv->accounts, object);
+  g_object_unref (object);
+}
+
 
 static void
 goabrowser_object_set_property (GObject      *object,
@@ -48,6 +75,9 @@ goabrowser_object_set_property (GObject      *object,
     {
       case PROP_GOA_CLIENT:
         self->priv->goa = GOA_CLIENT (g_value_dup_object (value));
+        g_signal_connect (self->priv->goa, "account-added", G_CALLBACK (on_account_added), self);
+        g_signal_connect (self->priv->goa, "account-removed", G_CALLBACK (on_account_removed), self);
+        self->priv->accounts = goa_client_get_accounts (self->priv->goa);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -80,6 +110,7 @@ goabrowser_object_finalize (GObject *object)
   GoaBrowserObject *self = GOABROWSER_OBJECT (object);
   GoaBrowserObjectPrivate *priv = self->priv;
   g_clear_object (&priv->goa);
+  g_list_free_full (priv->accounts, g_object_unref);
 }
 
 static void
@@ -113,6 +144,7 @@ goabrowser_object_init (GoaBrowserObject *self)
 GoaBrowserObject *
 goabrowser_object_new (GoaClient *client)
 {
+  g_return_val_if_fail (client != NULL, NULL);
   return g_object_new (GOABROWSER_TYPE_OBJECT, "goa-client", client, NULL);
 }
 
@@ -159,4 +191,12 @@ goabrowser_object_login_detected (GoaBrowserObject *self,
   g_action_group_activate_action (G_ACTION_GROUP (gnomecc), action_id, params);
 out:
   g_clear_object (&gnomecc);
+}
+
+const GList *
+goabrowser_object_list_accounts (GoaBrowserObject *self)
+{
+  GoaBrowserObjectPrivate *priv = self->priv;
+
+  return priv->accounts;
 }

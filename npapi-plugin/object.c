@@ -38,6 +38,7 @@ typedef struct {
 
 #define METHODS                           \
   METHOD (loginDetected, login_detected)  \
+  METHOD (listAccounts, list_accounts)    \
   /* */
 
 /* Method wrapper prototypes */
@@ -251,3 +252,61 @@ out:
     return success;
 }
 
+static gboolean
+goabrowser_list_accounts_wrapper (NPObject *object,
+                                  const NPVariant *args,
+                                  uint32_t argc,
+                                  NPVariant *result)
+{
+    GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)object;
+    const GList *accounts, *a;
+    NPObject *array;
+    NPVariant v;
+    NPIdentifier id;
+    gboolean success = TRUE;
+    NPP npp;
+    int i;
+
+    g_debug ("%s()", G_STRFUNC);
+
+    accounts = goabrowser_object_list_accounts (wrapper->goa);
+
+    id = NPN_GetStringIdentifier("Array");
+    if (!NPN_Invoke(npp, wrapper->window, id, NULL, 0, result))
+      {
+        g_warning ("Failed to create a new Array() object");
+        return FALSE;
+      }
+    array = NPVARIANT_TO_OBJECT (*result);
+
+    i = 0;
+    for (a = accounts; a != NULL; a = g_list_next (a))
+      {
+        GoaAccount *account;
+        NPObject *account_o;
+        const gchar *s;
+
+        account = goa_object_peek_account (GOA_OBJECT (a->data));
+
+        id = NPN_GetStringIdentifier("Object");
+        NPN_Invoke(npp, wrapper->window, id, NULL, 0, &v);
+        account_o = NPVARIANT_TO_OBJECT (v);
+
+        id = NPN_GetStringIdentifier ("providerType");
+        s = goa_account_get_provider_type (account);
+        STRINGZ_TO_NPVARIANT (s, v);
+        NPN_SetProperty (npp, account_o, id, &v);
+
+        id = NPN_GetStringIdentifier ("identity");
+        s = goa_account_get_identity (account);
+        STRINGZ_TO_NPVARIANT (s, v);
+        NPN_SetProperty (npp, account_o, id, &v);
+
+        id = NPN_GetIntIdentifier (i);
+        OBJECT_TO_NPVARIANT (account_o, v);
+        NPN_SetProperty (npp, array, id, &v);
+        NPN_ReleaseObject (account_o);
+        i++;
+      };
+    return success;
+}

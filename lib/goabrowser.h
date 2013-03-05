@@ -51,6 +51,7 @@ GType             goabrowser_object_get_type        (void) G_GNUC_CONST;
 GoaBrowserObject *goabrowser_object_new             (GoaClient *client);
 void              goabrowser_object_login_detected  (GoaBrowserObject *self,
                                                      gchar            *collected_data_json);
+const GList      *goabrowser_object_list_accounts   (GoaBrowserObject *self);
 
 #ifndef g_clear_pointer /* Remove this when we can depend on GLib >= 2.34 */
 #define g_clear_pointer(pp, destroy) \
