@@ -34,15 +34,20 @@ typedef struct {
     GoaBrowserObject *goa;
 } GoaBrowserObjectWrapper;
 
-static gboolean goabrowser_login_detected_wrapper (NPObject *object,
-                                                   const NPVariant *args,
-                                                   uint32_t argc,
-                                                   NPVariant *result);
-
 #define METHODS                           \
   METHOD (loginDetected, login_detected)  \
   /* */
 
+/* Method wrapper prototypes */
+#define METHOD(name, symbol)                                              \
+  static gboolean goabrowser_##symbol##_wrapper (NPObject        *object, \
+                                                 const NPVariant *args,   \
+                                                 uint32_t         argc,   \
+                                                 NPVariant       *result);
+METHODS
+#undef METHOD
+
+/* Method identifiers declaration */
 #define METHOD(name, symbol) static NPIdentifier symbol##_id;
 METHODS
 #undef METHOD
@@ -54,6 +59,7 @@ init_identifiers (void)
     if (g_atomic_int_compare_and_exchange (&initialized, 0, 1))
       {
         g_debug ("%s() initializing", G_STRFUNC);
+        /* Method identifiers initialization */
 #define METHOD(name, symbol) symbol##_id = NPN_GetStringIdentifier(#name);
         METHODS
 #undef METHOD
@@ -94,7 +100,7 @@ static bool
 NPClass_HasMethod (NPObject *npobj, NPIdentifier id)
 {
 #define METHOD(name, symbol) (id == (symbol##_id)) ||
-    /* expands to (id == login_detected_id) || FALSE; */
+    /* expands to (id == login_detected_id) || ... || FALSE; */
     return METHODS FALSE;
 #undef METHOD
 }
