@@ -88,7 +88,9 @@ NPClass_Allocate (NPP instance, NPClass *aClass)
 static void
 NPClass_Deallocate (NPObject *npobj)
 {
-    g_free (npobj);
+    GoaBrowserObjectWrapper *wrapper = (GoaBrowserObjectWrapper*)npobj;
+    g_clear_object (&wrapper->goa);
+    g_free (wrapper);
 }
 
 static void
