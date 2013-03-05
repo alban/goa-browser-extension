@@ -75,6 +75,14 @@ goabrowser_object_get_property (GObject      *object,
 }
 
 static void
+goabrowser_object_finalize (GObject *object)
+{
+  GoaBrowserObject *self = GOABROWSER_OBJECT (object);
+  GoaBrowserObjectPrivate *priv = self->priv;
+  g_clear_object (&priv->goa);
+}
+
+static void
 goabrowser_object_class_init (GoaBrowserObjectClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
@@ -83,6 +91,7 @@ goabrowser_object_class_init (GoaBrowserObjectClass *klass)
 
   gobject_class->set_property = goabrowser_object_set_property;
   gobject_class->get_property = goabrowser_object_get_property;
+  gobject_class->finalize = goabrowser_object_finalize;
 
   obj_props[PROP_GOA_CLIENT] =
     g_param_spec_object ("goa-client",
