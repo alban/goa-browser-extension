@@ -2,7 +2,8 @@ console.log("goa: GOA content script for GMail loading");
 
 function detectLoginInfo() {
   console.log("goa: Scraping for login info");
-  var r = document.evaluate('//*[@role="navigation"]//text()[contains(.,"@")]', document.body, null, XPathResult.STRING_TYPE, null);
+  var selector = '//*[@role="navigation"]//*[starts-with(@href, "https://profiles.google.com/")]//text()[contains(.,"@")]';
+  var r = document.evaluate(selector, document.body, null, XPathResult.STRING_TYPE, null);
   var loginName = r.stringValue;
   if (!loginName)
     return false;
