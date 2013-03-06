@@ -1,4 +1,4 @@
-console.log("goa: GOA content script for GMail loading");
+console.log("goa: GOA content script for Google services loading");
 
 function detectLoginInfo(selector, services) {
   console.log("goa: Scraping for login info");
@@ -38,8 +38,3 @@ function setupGoaIntegration(selector, services)
     }, 10000);
   };
 }
-
-setupGoaIntegration (
-  '//*[@role="navigation"]//*[starts-with(@href, "https://profiles.google.com/")]//text()[contains(.,"@")]',
-  ['mail']
-);

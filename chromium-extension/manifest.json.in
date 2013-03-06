@@ -36,7 +36,7 @@
 
     "content_scripts": [
         {
-          "js": [ "content.gmail.js" ],
+          "js": [ "content.google.common.js", "content.google.gmail.js" ],
           "matches": [ "*://mail.google.com/*" ],
           "run_at": "document_end"
         }
