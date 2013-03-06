@@ -1,8 +1,7 @@
 console.log("goa: GOA content script for GMail loading");
 
-function detectLoginInfo() {
+function detectLoginInfo(selector, services) {
   console.log("goa: Scraping for login info");
-  var selector = '//*[@role="navigation"]//*[starts-with(@href, "https://profiles.google.com/")]//text()[contains(.,"@")]';
   var r = document.evaluate(selector, document.body, null, XPathResult.STRING_TYPE, null);
   var loginName = r.stringValue;
   if (!loginName)
@@ -12,7 +11,7 @@ function detectLoginInfo() {
     data: {
       identity: loginName,
       provider: 'google',
-      services: ['mail'],
+      services: services,
       authenticationDomain: 'google.com'
     }
   };
@@ -21,18 +20,26 @@ function detectLoginInfo() {
   return true;
 }
 
-// Run detectLoginInfo() on any DOM change if not ready yet
-if (!detectLoginInfo()) {
-  var t = {};
-  t.observer = new WebKitMutationObserver(function(mutations, observer) {
-    if (detectLoginInfo()) {
-      observer.disconnect();
-      clearTimeout(t.timeout);
-    }
-  });
-  t.observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-  t.timeout = setTimeout(function() {
-      console.log("goa: Give up, unable to find any login info");
-      t.observer.disconnect();
-  }, 10000);
-};
+function setupGoaIntegration(selector, services)
+{
+  // Run detectLoginInfo() on any DOM change if not ready yet
+  if (!detectLoginInfo()) {
+    var t = {};
+    t.observer = new WebKitMutationObserver(function(mutations, observer) {
+      if (detectLoginInfo(selector, services)) {
+        observer.disconnect();
+        clearTimeout(t.timeout);
+      }
+    });
+    t.observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    t.timeout = setTimeout(function() {
+        console.log("goa: Give up, unable to find any login info");
+        t.observer.disconnect();
+    }, 10000);
+  };
+}
+
+setupGoaIntegration (
+  '//*[@role="navigation"]//*[starts-with(@href, "https://profiles.google.com/")]//text()[contains(.,"@")]',
+  ['mail']
+);
