@@ -11,9 +11,7 @@ libgoabrowser_la_SOURCES = \
 	goabrowser.h
 
 libgoabrowser_la_LDFLAGS = \
-	-release $(VERSION) \
-	-shared \
-	-export-dynamic
+	-static
 
 libgoabrowser_la_LIBADD = \
 	$(GOABROWSER_LIBS)
