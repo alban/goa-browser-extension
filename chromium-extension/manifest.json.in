@@ -41,6 +41,16 @@
           "run_at": "document_end"
         },
         {
+          "js": [ "content.google.common.js", "content.google.calendar.js" ],
+          "matches": [ "*://www.google.com/calendar/*" ],
+          "run_at": "document_end"
+        },
+        {
+          "js": [ "content.google.common.js", "content.google.picasaweb.js" ],
+          "matches": [ "*://picasaweb.google.com/*" ],
+          "run_at": "document_end"
+        },
+        {
           "js": [ "content.google.common.js", "content.google.gdrive.js" ],
           "matches": [ "*://drive.google.com/*" ],
           "run_at": "document_end"
