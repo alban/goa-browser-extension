@@ -105,12 +105,25 @@ goabrowser_object_get_property (GObject      *object,
 }
 
 static void
+goabrowser_object_dispose (GObject *object)
+{
+  GoaBrowserObject *self = GOABROWSER_OBJECT (object);
+  GoaBrowserObjectPrivate *priv = self->priv;
+
+  g_clear_object (&priv->goa);
+
+  G_OBJECT_CLASS (goabrowser_object_parent_class)->dispose (object);
+}
+
+static void
 goabrowser_object_finalize (GObject *object)
 {
   GoaBrowserObject *self = GOABROWSER_OBJECT (object);
   GoaBrowserObjectPrivate *priv = self->priv;
-  g_clear_object (&priv->goa);
+
   g_list_free_full (priv->accounts, g_object_unref);
+
+  G_OBJECT_CLASS (goabrowser_object_parent_class)->finalize (object);
 }
 
 static void
@@ -122,6 +135,7 @@ goabrowser_object_class_init (GoaBrowserObjectClass *klass)
 
   gobject_class->set_property = goabrowser_object_set_property;
   gobject_class->get_property = goabrowser_object_get_property;
+  gobject_class->dispose = goabrowser_object_dispose;
   gobject_class->finalize = goabrowser_object_finalize;
 
   obj_props[PROP_GOA_CLIENT] =
