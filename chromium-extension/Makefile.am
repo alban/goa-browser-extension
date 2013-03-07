@@ -36,12 +36,12 @@ res/gnome-online-accounts.crx: $(TMPDIR) $(RSAFILE)
 
 if WITH_CHROMIUM
 chromiummanifestdir = $(datadir)/chromium/extensions/
-chromiummanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/extension/*.json)
+chromiummanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/res/*.json)
 endif
 
 if WITH_GOOGLE_CHROME
 googlechromemanifestdir = $(datadir)/google-chrome/extensions/
-googlechromemanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/extension/*.json)
+googlechromemanifest_DATA = $(wildcard $(top_builddir)/chromium-extension/res/*.json)
 endif
 
 %.json: %.json.in
