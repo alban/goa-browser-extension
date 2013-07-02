@@ -59,6 +59,11 @@
           "js": [ "content.google.common.js", "content.google.plus.js" ],
           "matches": [ "*://plus.google.com/*" ],
           "run_at": "document_end"
+        },
+        {
+          "js": [ "content.facebook.js" ],
+          "matches": [ "*://www.facebook.com/*" ],
+          "run_at": "document_end"
         }
     ],
 
