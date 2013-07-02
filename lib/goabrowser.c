@@ -1,6 +1,6 @@
 /*
  * This file is part of the goa-browser-extension.
- * Copyright (C) Collabora Ltd. 2013
+ * Copyright (C) Intel Corporation. 2013
  *
  * Author: Emanuele Aina <emanuele.aina@collabora.com>
  *

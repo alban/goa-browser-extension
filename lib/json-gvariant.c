@@ -2,7 +2,7 @@
  *
  * Derived from JSON-GLib and adapted to JSON-C
  * Copyright (C) 2007  OpenedHand Ltd.
- * Copyright (C) 2013  Collabora Ltd.
+ * Copyright (C) 2013  Intel Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

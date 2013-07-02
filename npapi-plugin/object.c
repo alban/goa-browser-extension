@@ -1,7 +1,7 @@
 /*
  * This file is part of the gnome-online-account-browser-plugin.
  * Copyright (C) Canonical Ltd. 2012
- * Copyright (C) Collabora Ltd. 2013
+ * Copyright (C) Intel Corporation. 2013
  *
  * Author:
  *   Emanuele Aina <emanuele.aina@collabora.com>
