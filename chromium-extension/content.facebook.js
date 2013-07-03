@@ -6,9 +6,10 @@ function detectLoginInfo(selector, services) {
   var field = r.stringValue;
   if (!field)
     return false;
-  /* If we get "http://www.facebook.com/myusername", we want to return
-   * "myusername". */
-  var matches = field.match(/www.facebook.com\/(.*)$/);
+  /* If we get "http://www.facebook.com/myusername?ref=tn_tnmn", we want to
+   * return "myusername". The "?ref" part might not be there, depending
+   * whether Facebook Graph is enabled. */
+  var matches = field.match(/www.facebook.com\/([^\?]*)/);
   var loginName = matches[1];
   if (!loginName)
     return false;
@@ -46,6 +47,12 @@ function setupGoaIntegration(selector, services)
 }
 
 setupGoaIntegration (
-  'string(//li[@id="navTimeline"]/a[starts-with(@href, "https://www.facebook.com/") or starts-with(@href, "http://www.facebook.com/")]/@href)',
+  // The DOM tree is different for accounts with Facebook Graph enabled and
+  // with accounts without. This should work for both.
+  'string(//div[@class="rfloat"]/ul[@id="pageNav"]'
+          + '/li[@id="navTimeline" or @class="navItem firstItem tinyman"]'
+          + '/a[starts-with(@href, "https://www.facebook.com/") '
+                + 'or starts-with(@href, "http://www.facebook.com/")]'
+          + '/@href)',
   ['chat']
 );
