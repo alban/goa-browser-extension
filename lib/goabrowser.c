@@ -187,8 +187,12 @@ goabrowser_object_login_detected (GoaBrowserObject *self,
   g_debug ("%s() requesting new account creation", G_STRFUNC);
 
   builder = g_variant_builder_new (G_VARIANT_TYPE ("av"));
+
+  /* Flags (unused) must be the first parameter.
+   * See: https://bugzilla.gnome.org/show_bug.cgi?id=696054*/
+  g_variant_builder_add (builder, "v", g_variant_new ("a{sv}"));
+
   g_variant_builder_add (builder, "v", g_variant_new_string ("add"));
-  g_variant_builder_add (builder, "v", g_variant_new ("a{sv}")); /* Flags, unused */
   v = g_variant_lookup_value (preseed, "provider", G_VARIANT_TYPE_STRING);
   g_variant_builder_add (builder, "v", v);
   g_variant_builder_add (builder, "v", preseed);
