@@ -190,7 +190,7 @@ goabrowser_object_login_detected (GoaBrowserObject *self,
 
   /* Flags (unused) must be the first parameter.
    * See: https://bugzilla.gnome.org/show_bug.cgi?id=696054*/
-  g_variant_builder_add (builder, "v", g_variant_new ("a{sv}"));
+  g_variant_builder_add (builder, "v", g_variant_new ("a{sv}", NULL));
 
   g_variant_builder_add (builder, "v", g_variant_new_string ("add"));
   v = g_variant_lookup_value (preseed, "provider", G_VARIANT_TYPE_STRING);
